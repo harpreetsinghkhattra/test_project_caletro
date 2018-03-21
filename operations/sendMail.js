@@ -32,8 +32,8 @@ module.exports.forgetPassword = function (obj, cb) {
         port: 465,
         secure: true,
         auth: {
-            user: 'agape1266@gmail.com',
-            pass: 'agape123456789'
+            user: 'tt7873441@gmail.com',
+            pass: 'welcome2india'
         }
     });
 
@@ -420,8 +420,8 @@ module.exports.signupSuccess = function (obj, cb) {
         port: 465,
         secure: true,
         auth: {
-            user: 'agape1266@gmail.com',
-            pass: 'agape123456789'
+            user: 'tt7873441@gmail.com',
+            pass: 'welcome2india'
         }
     });
 
