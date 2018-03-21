@@ -294,7 +294,7 @@ module.exports.forgetPassword = function (obj, cb) {
                                                                                 <td align='center' valign='middle' >
                                                                                     <div class="contentEditableContainer contentImageEditable">
                                                                                         <div class="contentEditable" >
-                                                                                            <img src="http://54.214.127.128/Images/logo.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
+                                                                                            <img src="http://54.186.245.30/imgs/icon.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
                                                                                         </div>
                                                                                     </div>
                                                                                 </td>
@@ -683,7 +683,7 @@ module.exports.signupSuccess = function (obj, cb) {
                                                                                 <td align='center' valign='middle' >
                                                                                     <div class="contentEditableContainer contentImageEditable">
                                                                                         <div class="contentEditable" >
-                                                                                            <img src="http://54.214.127.128/Images/logo.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
+                                                                                            <img src="http://54.186.245.30/imgs/icon.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
                                                                                         </div>
                                                                                     </div>
                                                                                 </td>
