@@ -77,6 +77,28 @@ router.post('/verification', (req, res) => {
     })
 });
 
+/** Social Login */
+router.post('/socialMediaLogin', (req, res) => {    
+    CommonJs.validate("socialMediaLogin", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.socialLogin(req.body, (status, response) => {
+                CommonJs.httpResponse(req, res, status, response);
+            });
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    })
+});
+
+/** Social Registeration */
+router.post('/socialMediaRegisteration', (req, res) => {    
+    CommonJs.validate("socialMediaRegisteration", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.socialRegisteration(req.body, (status, response) => {
+                CommonJs.httpResponse(req, res, status, response);
+            });
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    })
+});
+
 /** Media files api */
 router.use('/', media);
 

@@ -245,6 +245,71 @@ export class Operations {
     }
 
     /**
+     * Social Login's Registeration
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static socialRegisteration(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var collection = db.collection('users');
+                collection.find({ userId: obj.id }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length === 0) {
+                        collection.insert({
+                            email: obj.email && obj.email.toLowerCase(),
+                            userType: obj.userType,
+                            userId : obj.id,
+                            loginType : obj.loginType,
+                            name: obj.name,
+                            firstName: obj.firstName,
+                            lastName: obj.lastName,
+                            imgPath: obj.imgPath,
+                            latitude: obj.latitude,
+                            longitude: obj.longitude,
+                            verificationCode: 1,
+                            verificationToken: null,
+                            status: 0,
+                            deletedStatus: 0,
+                            createdTime: new Date().getTime(),
+                            updatedTime: new Date().getTime()
+                        }, (err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            else {
+                                var response = data.ops[0];
+                                CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb)
+                            }
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
+                })
+            }
+        })
+    }
+
+    /**
+     * Social Login
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static socialLogin(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var collection = db.collection('users');
+                collection.find({ userId: obj.id }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        var response = data[0];
+                        if (response && response.password) response.password = "xxxxxx"
+                        CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb);
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                })
+            }
+        })
+    }
+
+    /**
      * Reset password
      * @param {*object} obj 
      * @param {*function} cb 
@@ -253,14 +318,14 @@ export class Operations {
         Connection.connect((err, db, client) => {
             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
             else {
-                        console.log('obj', obj);
-                
+                console.log('obj', obj);
+
                 var collection = db.collection('users');
                 collection.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
                         console.log('obj', obj);
-                        
+
                         CommonJs.randomPassword(obj.email.toLowerCase(), obj.password, (password, salt) => {
                             collection.update({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }, {
                                 $set: {
