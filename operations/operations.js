@@ -254,7 +254,7 @@ export class Operations {
             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
             else {
                 var collection = db.collection('users');
-                collection.find({ userId: obj.id }).toArray((err, data) => {
+                collection.find({ userId: obj.id, email: obj.email.toLowerCase() }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length === 0) {
                         collection.insert({
