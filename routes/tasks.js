@@ -89,7 +89,8 @@ router.post('/socialMediaLogin', (req, res) => {
 });
 
 /** Social Registeration */
-router.post('/socialMediaRegisteration', (req, res) => {    
+router.post('/socialMediaRegisteration', (req, res) => {  
+    console.log('req.body : ', req.body());  
     CommonJs.validate("socialMediaRegisteration", req.body, (status, emptyKeys) => {
         if (status) {
             Operations.socialRegisteration(req.body, (status, response) => {
