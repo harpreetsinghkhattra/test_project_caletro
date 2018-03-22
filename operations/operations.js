@@ -254,36 +254,41 @@ export class Operations {
             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
             else {
                 var collection = db.collection('users');
-                collection.find({ userId: obj.id, email: obj.email.toLowerCase() }).toArray((err, data) => {
+                collection.find({ userId: obj.id }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length === 0) {
-                        collection.insert({
-                            email: obj.email && obj.email.toLowerCase(),
-                            userType: obj.userType,
-                            userId: obj.id,
-                            loginType: obj.loginType,
-                            name: obj.name,
-                            firstName: obj.firstName,
-                            userName: obj.username,
-                            lastName: obj.lastName,
-                            imgPath: obj.imgPath,
-                            latitude: obj.latitude,
-                            longitude: obj.longitude,
-                            verificationCode: 1,
-                            verificationToken: null,
-                            status: 0,
-                            deletedStatus: 0,
-                            createdTime: new Date().getTime(),
-                            updatedTime: new Date().getTime()
-                        }, (err, data) => {
+                        collection.find({email : obj.email.toLowerCase()}).toArray((err, data) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
-                            else {
-                                var response = data.ops[0];
-                                CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb)
-                            }
+                            if (data && data.length === 0) {
+                                collection.insert({
+                                    email: obj.email && obj.email.toLowerCase(),
+                                    userType: obj.userType,
+                                    userId: obj.id,
+                                    loginType: obj.loginType,
+                                    name: obj.name,
+                                    firstName: obj.firstName,
+                                    userName: obj.username,
+                                    lastName: obj.lastName,
+                                    imgPath: obj.imgPath,
+                                    latitude: obj.latitude,
+                                    longitude: obj.longitude,
+                                    verificationCode: 1,
+                                    verificationToken: null,
+                                    status: 0,
+                                    deletedStatus: 0,
+                                    createdTime: new Date().getTime(),
+                                    updatedTime: new Date().getTime()
+                                }, (err, data) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+                                        var response = data.ops[0];
+                                        CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb)
+                                    }
+                                });
+                            } else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
                         });
                     } else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
-                })
+                });
             }
         })
     }
