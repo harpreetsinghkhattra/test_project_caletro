@@ -7,7 +7,7 @@ module.exports = {
         forgetPassword : ["email"], 
         verification : ["email", "token"],
         resetPassword : ["id", "accessToken", "password"],
-        socialMediaLogin : ["id"],
+        socialMediaLogin : ["id", "email"],
         socialMediaRegisteration : ["id", "userType", "email", "loginType", "latitude", "longitude"]
     }
 }

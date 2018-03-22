@@ -260,10 +260,11 @@ export class Operations {
                         collection.insert({
                             email: obj.email && obj.email.toLowerCase(),
                             userType: obj.userType,
-                            userId : obj.id,
-                            loginType : obj.loginType,
+                            userId: obj.id,
+                            loginType: obj.loginType,
                             name: obj.name,
                             firstName: obj.firstName,
+                            userName: obj.username,
                             lastName: obj.lastName,
                             imgPath: obj.imgPath,
                             latitude: obj.latitude,
@@ -297,12 +298,28 @@ export class Operations {
             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
             else {
                 var collection = db.collection('users');
-                collection.find({ userId: obj.id }).toArray((err, data) => {
+                collection.find({ email: obj.email.toLowerCase(), userId: obj.id }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
-                        var response = data[0];
-                        if (response && response.password) response.password = "xxxxxx"
-                        CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb);
+                        CommonJs.generateToken(obj.email.toLowerCase(), (TOKEN, salt) => {
+                            if (TOKEN) {
+                                collection.update({ email: obj.email.toLowerCase(), userId: obj.id }, {
+                                    $set: {
+                                        userAccessToken: TOKEN,
+                                        updatedTime: new Date().getTime()
+                                    }
+                                }, (err, success) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+                                        var temp = data[0];
+                                        temp.password = "xxxxxx";
+                                        temp.salt = "xxxxxx";
+                                        temp.userAccessToken = TOKEN;
+                                        CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+                                    }
+                                });
+                            } else CommonJs.close(client, CommonJSInstance.TOKEN_ERROR, [], cb);
+                        });
                     } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
                 })
             }
