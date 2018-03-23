@@ -8,6 +8,7 @@ module.exports = {
         verification : ["email", "token"],
         resetPassword : ["id", "accessToken", "password"],
         socialMediaLogin : ["id", "email"],
-        socialMediaRegisteration : ["id", "userType", "email", "loginType", "latitude", "longitude"]
+        socialMediaRegisteration : ["id", "userType", "email", "loginType", "latitude", "longitude"],
+        resendVerificationToken : ["email"]
     }
 }

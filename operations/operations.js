@@ -257,7 +257,7 @@ export class Operations {
                 collection.find({ userId: obj.id }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length === 0) {
-                        collection.find({email : obj.email.toLowerCase()}).toArray((err, data) => {
+                        collection.find({ email: obj.email.toLowerCase() }).toArray((err, data) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                             if (data && data.length === 0) {
                                 collection.insert({
@@ -361,6 +361,48 @@ export class Operations {
                         });
                     } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
                 });
+            }
+        })
+    }
+
+    /**
+     * Resend verification token
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static resendVerificationToken(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var collection = db.collection('users');
+                collection.find({ email: obj.email.toLowerCase() }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        var response = data[0];
+                        if (response && response.password) response.password = "xxxxxx"
+
+                        //Create random password key
+                        var randomeToken = Math.floor(Math.random() * 1000000) + '';
+                        console.log(randomeToken);
+                        CommonJs.randomPassword(response.email, randomeToken, (token, salt) => {
+                            var mailSentOpt = {
+                                email: response.email,
+                                token: randomeToken
+                            }
+
+                            collection.update({ email: obj.email.toLowerCase() }, {
+                                $set: {
+                                    verificationToken: token,
+                                    deletedStatus: 1,
+                                    updatedTime: new Date().getTime()
+                                }
+                            }, (err, data) => {
+                                if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
+                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb));
+                            });
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                })
             }
         })
     }

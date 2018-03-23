@@ -100,6 +100,18 @@ router.post('/socialMediaRegisteration', (req, res) => {
     })
 });
 
+/** Resend token */
+router.post('/resendVerificationToken', (req, res) => {  
+    console.log('req.body : ', req.body);  
+    CommonJs.validate("resendVerificationToken", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.resendVerificationToken(req.body, (status, response) => {
+                CommonJs.httpResponse(req, res, status, response);
+            });
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    })
+});
+
 /** Media files api */
 router.use('/', media);
 
