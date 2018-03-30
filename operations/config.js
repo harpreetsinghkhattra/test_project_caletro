@@ -9,6 +9,11 @@ module.exports = {
         resetPassword : ["id", "accessToken", "password"],
         socialMediaLogin : ["id", "email"],
         socialMediaRegisteration : ["id", "userType", "email", "loginType", "latitude", "longitude"],
-        resendVerificationToken : ["email"]
+        resendVerificationToken : ["email"],
+        lawyerAddClient : ["id", "accessToken", "phone", "email", "name"],
+        searchLawyerClient : ["id", "accessToken", "name"],
+        getAllLawyerClients : ["id", "accessToken"],
+        registerBookingFromLawyer : ["id", "accessToken", "lawerId", "userId", "date", "from", "to", "preliminaryNotes", "serviceType", "cost", "activeStatus"],
+        getLawyerClientInfo : ["id", "accessToken", "cid"]
     }
 }

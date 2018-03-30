@@ -18,6 +18,7 @@ export class CommonJs {
         this.VOTE = "vote";
         this.UNVOTE = "unVote";
         this.BASE_URL = "http://54.214.127.128";
+        this.EMAIL_PRESENT = "emailPresent";
     }
 
     /**
@@ -82,8 +83,10 @@ export class CommonJs {
                     var data = cipher.read();
                     if (data) {
                         encrypt += data.toString('hex');
-                        cb(data.toString('hex'), username);
                     }
+                })
+                .on('end', function () {
+                    cb(encrypt.toString('hex'), username);
                 });
             cipher.write(given_password);
             cipher.end();
@@ -96,9 +99,12 @@ export class CommonJs {
                     var data = cipher.read();
                     if (data) {
                         encrypt += data.toString('hex');
-                        cb(data.toString('hex'), username);
+                        // cb(data.toString('hex'), username);
                     }
-                });
+                })
+                .on('end', function () {
+                    cb(encrypt.toString('hex'), username);
+                });;
             cipher.write(pass);
             cipher.end();
         }
@@ -244,46 +250,13 @@ export class CommonJs {
                         error: false
                     })
                 break;
-            case "like":
+            case "emailPresent":
                 res.status(200)
                     .json({
                         code: 1,
                         status: 200,
                         data: response,
-                        message: "Like",
-                        emptyKeys: [],
-                        error: false
-                    })
-                break;
-            case "unlike":
-                res.status(200)
-                    .json({
-                        code: 1,
-                        status: 200,
-                        data: response,
-                        message: "Unlike",
-                        emptyKeys: [],
-                        error: false
-                    })
-                break;
-            case "vote":
-                res.status(200)
-                    .json({
-                        code: 1,
-                        status: 200,
-                        data: response,
-                        message: "Vote",
-                        emptyKeys: [],
-                        error: false
-                    })
-                break;
-            case "unVote":
-                res.status(200)
-                    .json({
-                        code: 1,
-                        status: 200,
-                        data: response,
-                        message: "UnVote",
+                        message: "EmailPresent",
                         emptyKeys: [],
                         error: false
                     })

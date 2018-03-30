@@ -5,6 +5,9 @@ import media from './media';
 import path from 'path';
 import fs from 'fs';
 
+/** Apis */
+import Booking from './booking';
+
 /** Route */
 var router = express.Router();
 
@@ -111,6 +114,9 @@ router.post('/resendVerificationToken', (req, res) => {
         } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
     })
 });
+
+/** Booking apis */
+router.use('/booking', Booking);
 
 /** Media files api */
 router.use('/', media);

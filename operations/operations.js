@@ -3,6 +3,11 @@ import { CommonJs } from './common';
 import { ObjectId, ObjectID } from 'mongodb';
 import SendMail from './sendMail';
 import path from 'path';
+import fs from 'fs';
+import moment from 'moment-timezone';
+
+//Time zone
+var TIME_ZONE = "America/New_York";
 
 const CommonJSInstance = new CommonJs();
 export class Operations {
@@ -75,8 +80,8 @@ export class Operations {
                                 status: 0,
                                 deletedStatus: 0,
                                 salt: salt,
-                                createdTime: new Date().getTime(),
-                                updatedTime: new Date().getTime()
+                                createdTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                updatedTime: moment.tz(new Date(), TIME_ZONE).format()
                             }, (err, data) => {
                                 if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                                 else {
@@ -139,8 +144,8 @@ export class Operations {
                                 status: 0,
                                 deletedStatus: 0,
                                 salt: salt,
-                                createdTime: new Date().getTime(),
-                                updatedTime: new Date().getTime()
+                                createdTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                updatedTime: moment.tz(new Date(), TIME_ZONE).format()
                             }, (err, data) => {
                                 if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                                 else {
@@ -276,8 +281,8 @@ export class Operations {
                                     verificationToken: null,
                                     status: 0,
                                     deletedStatus: 0,
-                                    createdTime: new Date().getTime(),
-                                    updatedTime: new Date().getTime()
+                                    createdTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                    updatedTime: moment.tz(new Date(), TIME_ZONE).format()
                                 }, (err, data) => {
                                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                                     else {
@@ -405,5 +410,235 @@ export class Operations {
                 })
             }
         })
+    }
+
+    /**
+     * Lawyer add client
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static addLawyerClient(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var collection = db.collection('lawyerClients');
+
+                this.isEmailPresent(obj.email, (status) => {
+                    if (status) {
+                        users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                collection.find({ email: obj.email.toLowerCase(), lawerId: obj.id }).toArray((err, data) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    if (data && data.length === 0) {
+                                        collection.insert({
+                                            lawerId: obj.id,
+                                            email: obj.email.toLowerCase(),
+                                            phone: obj.phone,
+                                            name: obj.name,
+                                            imagePath: obj.imagePath ? obj.imagePath : null,
+                                            status: 0,
+                                            deletedStatus: 0,
+                                            createdTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                            updatedTime: moment.tz(new Date(), TIME_ZONE).format()
+                                        }, (err, data) => {
+                                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                            else {
+                                                var response = data.ops[0];
+                                                CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb);
+                                            }
+                                        });
+                                    } else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
+                                })
+                            } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.EMAIL_PRESENT, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Internally check email is present or not
+     */
+    static isEmailPresent(email, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var lawyerClients = db.collection('lawyerClients');
+
+                // Check in users
+                users.find({ email: email.toLowerCase() }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length === 0) {
+
+                        // Check in lawyers
+                        lawyerClients.find({ email: email.toLowerCase() }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length === 0) cb(true);
+                            else cb(false);
+                        });
+                    } else cb(false);;
+                });
+            }
+        })
+    }
+
+    /**
+     * Client Search
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static searchLawyerClients(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var collection = db.collection('users');
+                var lawyerClients = db.collection('lawyerClients');
+
+                collection.find({ _id: new ObjectID(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        lawyerClients.find({}).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                var tempSearch = [];
+                                data.forEach((element, index) => {
+                                    if (element.name.indexOf(obj.name) > -1) tempSearch.push({ index: index, indexOf: element.name.indexOf(obj.name), element: element });
+
+                                    if (data.length - 1 === index) {
+                                        tempSearch.sort(function (a, b) {
+                                            if (a.indexOf < b.indexOf)
+                                                return -1;
+                                            if (a.indexOf > b.indexOf)
+                                                return 1;
+                                            return 0;
+                                        });
+
+                                        tempSearch.sort(function (a, b) {
+                                            if (a.index < b.index)
+                                                return -1;
+                                            if (a.index > b.index)
+                                                return 1;
+                                            return 0;
+                                        });
+
+                                        tempSearch = tempSearch.filter(function (item, pos, ary) {
+                                            return !pos || (item.index != ary[pos - 1].index);
+                                        });
+
+                                        tempSearch.sort(function (a, b) {
+                                            if (a.indexOf < b.indexOf)
+                                                return -1;
+                                            if (a.indexOf > b.indexOf)
+                                                return 1;
+                                            return 0;
+                                        });
+
+                                        CommonJs.close(client, CommonJSInstance.SUCCESS, tempSearch, cb);
+                                    }
+                                });
+                            } else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        })
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Get all lawyer clients
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static getAllLawyerClients(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var collection = db.collection('users');
+                var lawyerClients = db.collection('lawyerClients');
+
+                collection.find({ _id: new ObjectID(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        lawyerClients.find({}).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        })
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Register booking
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static registerBookingClients(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.insert({
+                            lawerId: obj.lid,
+                            userId: obj.uid,
+                            date: moment.tz(new Date(), TIME_ZONE).format(),
+                            from: moment.tz(new Date(), TIME_ZONE).format(),
+                            to: moment.tz(new Date(), TIME_ZONE).format(),
+                            preliminaryNotes: obj.preliminaryNotes,
+                            serviceType: obj.serviceType,
+                            cost: obj.cost,
+                            activeStatus: false,
+                            status: 0,
+                            deletedStatus: 0,
+                            createdTime: moment.tz(new Date(), TIME_ZONE).format(),
+                            updatedTime: moment.tz(new Date(), TIME_ZONE).format()
+                        }, (err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            else {
+                                var response = data.ops[0];
+                                CommonJs.close(client, CommonJSInstance.SUCCESS, response, cb);
+                            }
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Get lawyer client info
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static getLaywerClientInfo(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var collection = db.collection('lawyerClients');
+
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        collection.find({ _id: new ObjectId(obj.cid) }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data[0], cb);
+                            else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
     }
 }
