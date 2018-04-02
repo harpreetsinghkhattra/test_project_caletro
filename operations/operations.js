@@ -498,7 +498,7 @@ export class Operations {
                 var collection = db.collection('users');
                 var lawyerClients = db.collection('lawyerClients');
 
-                obj.name = obj.name ? obj.name.toLowerCase() : '';
+                // obj.name = obj.name ? obj.name.toLowerCase() : '';
                 collection.find({ _id: new ObjectID(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
