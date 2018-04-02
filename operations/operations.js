@@ -509,9 +509,10 @@ export class Operations {
 
                                 data.forEach((element, index) => {
                                     if (element.name && element.name.indexOf(obj.name) > -1) tempSearch.push({ index: index, indexOf: element.name.indexOf(obj.name), element: element });
-                                    console.log('name => ', obj.name);
+                                    console.log('name => ', obj.name, element.name);
                                     console.log('data =>', tempSearch);
                                     if (data.length - 1 === index) {
+                                        console.log(tempSearch.length);
                                         tempSearch.sort(function (a, b) {
                                             if (a.indexOf < b.indexOf)
                                                 return -1;
@@ -566,7 +567,7 @@ export class Operations {
                 collection.find({ _id: new ObjectID(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
-                        lawyerClients.find({}).toArray((err, data) => {
+                        lawyerClients.find({ lawerId: obj.id }).toArray((err, data) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                             if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
                             else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
