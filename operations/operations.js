@@ -437,7 +437,7 @@ export class Operations {
                                             email: obj.email.toLowerCase(),
                                             phone: obj.phone,
                                             name: obj.name,
-                                            imagePath: obj.imagePath ? CommonJSInstance.BASE_URL+obj.imagePath : null,
+                                            imagePath: obj.imagePath ? CommonJSInstance.BASE_URL + obj.imagePath : null,
                                             status: 0,
                                             deletedStatus: 0,
                                             createdTime: moment.tz(new Date(), TIME_ZONE).format(),
@@ -497,18 +497,20 @@ export class Operations {
             else {
                 var collection = db.collection('users');
                 var lawyerClients = db.collection('lawyerClients');
-
+                // console.log(obj.name);
                 // obj.name = obj.name ? obj.name.toLowerCase() : '';
                 collection.find({ _id: new ObjectID(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
-                        lawyerClients.find({}).toArray((err, data) => {
+                        lawyerClients.find({ lawerId: obj.id }).toArray((err, data) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                             if (data && data.length !== 0) {
                                 var tempSearch = [];
-                                data.forEach((element, index) => {
-                                    if (element.name.indexOf(obj.name) > -1) tempSearch.push({ index: index, indexOf: element.name.indexOf(obj.name), element: element });
 
+                                data.forEach((element, index) => {
+                                    if (element.name && element.name.indexOf(obj.name) > -1) tempSearch.push({ index: index, indexOf: element.name.indexOf(obj.name), element: element });
+                                    console.log('name => ', obj.name);
+                                    console.log('data =>', tempSearch);
                                     if (data.length - 1 === index) {
                                         tempSearch.sort(function (a, b) {
                                             if (a.indexOf < b.indexOf)
