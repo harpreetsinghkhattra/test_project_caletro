@@ -437,7 +437,7 @@ export class Operations {
                                             email: obj.email.toLowerCase(),
                                             phone: obj.phone,
                                             name: obj.name,
-                                            imagePath: obj.imagePath ? obj.imagePath : null,
+                                            imagePath: obj.imagePath ? CommonJSInstance.BASE_URL+obj.imagePath : null,
                                             status: 0,
                                             deletedStatus: 0,
                                             createdTime: moment.tz(new Date(), TIME_ZONE).format(),
@@ -498,6 +498,7 @@ export class Operations {
                 var collection = db.collection('users');
                 var lawyerClients = db.collection('lawyerClients');
 
+                obj.name = obj.name ? obj.name.toLowerCase() : '';
                 collection.find({ _id: new ObjectID(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
