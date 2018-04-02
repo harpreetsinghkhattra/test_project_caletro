@@ -294,7 +294,7 @@ module.exports.forgetPassword = function (obj, cb) {
                                                                                 <td align='center' valign='middle' >
                                                                                     <div class="contentEditableContainer contentImageEditable">
                                                                                         <div class="contentEditable" >
-                                                                                            <img src="http://54.186.245.30/imgs/icon.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
+                                                                                            <img src="http://34.223.229.37/imgs/icon.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
                                                                                         </div>
                                                                                     </div>
                                                                                 </td>
@@ -683,7 +683,7 @@ module.exports.signupSuccess = function (obj, cb) {
                                                                                 <td align='center' valign='middle' >
                                                                                     <div class="contentEditableContainer contentImageEditable">
                                                                                         <div class="contentEditable" >
-                                                                                            <img src="http://54.186.245.30/imgs/icon.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
+                                                                                            <img src="http://34.223.229.37/imgs/icon.png" alt='Compagnie logo' data-default="placeholder" data-max-width="100" width='100'/>
                                                                                         </div>
                                                                                     </div>
                                                                                 </td>
@@ -716,7 +716,7 @@ module.exports.signupSuccess = function (obj, cb) {
                                                                                         <td valign="top" align="left">
                                                                                             <div class="contentEditableContainer contentTextEditable">
                                                                                                 <div class="contentEditable" style="color:#565656;font-size:15px;line-height:28px; font-weight: normal; border-left: 4px solid #724089; padding: 0 15px;">
-                                                                                                    <p>Congractulations registeration has been successfully done!...</p>
+                                                                                                    <p>Congratulations registeration has been successfully done!...</p>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </td>
