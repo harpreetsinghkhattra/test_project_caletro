@@ -72,4 +72,52 @@ routes.post('/lawyer/getClientInfo', (req, res) => {
     });
 });
 
+routes.post('/lawyer/getBookingInfo', (req, res) => {
+    CommonJs.validate("getBookingInfo", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getBookings(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/denyBooking', (req, res) => {
+    CommonJs.validate("denyBooking", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.denyBooking(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/clientBookings', (req, res) => {
+    CommonJs.validate("clientBookings", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.allClientBookings(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/getAllBookings', (req, res) => {
+    CommonJs.validate("getAllBookings", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getAllLawyerBookings(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/changeViewBookingStatus', (req, res) => {
+    CommonJs.validate("changeViewBookingStatus", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.changeBookingViewStatus(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/getAllUnreadBookings', (req, res) => {
+    CommonJs.validate("getAllUnreadBookings", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getUnreadBookings(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
 module.exports = routes;

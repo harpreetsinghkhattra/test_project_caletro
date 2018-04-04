@@ -7,6 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('lawyerup_server:server');
 var http = require('http');
+import SocketIO from 'socket.io';
+import { Operations } from '../operations/operations.js';
+import { CommonJs } from '../operations/common.js';
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +23,58 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+let io = SocketIO(server);
+var CommonJsInstance = new CommonJs();
+
+/**
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * Socekt implementation start
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ */
+var clients = [];
+io.sockets.on('connection', function (socket) {
+
+  /**
+   * On user connection
+   */
+  socket.on('user connection', (data) => {
+    socket.id = data.user;
+    clients.push(socket.id);
+    clients = Array.from(new Set(clients));
+    console.log(data);
+    io.emit('update users', { connectedUsers: clients });
+  });
+
+  socket.on('getAllUnreadClientBookings', (data) => {
+    CommonJs.validate("getAllUnreadClientBookings", data, (status, emptyKeys) => {
+      if (status) {
+        console.log(data);
+        Operations.getUnreadBookings(data, (status, response) => io.emit('get all unread client bookings data', { code: 200, message: CommonJsInstance.SUCCESS, data: response, error: false, clientId: data.clientId }));
+      } else io.emit('get all unread client bookings data', { code: 400, message: CommonJsInstance.VALIDATE_ERROR, data: emptyKeys, error: true, clientId: data.clientId });
+    });
+  });
+
+  socket.on('disconnect', function () {
+    if (clients.indexOf(socket.id) > -1) {
+      clients.splice(clients.indexOf(socket.id), 1);
+    }
+    io.emit('users disconnected', { connectedUser: socket.id });
+  });
+});
+
+/**
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * Socket End
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ */
 
 /**
  * Listen on provided port, on all network interfaces.

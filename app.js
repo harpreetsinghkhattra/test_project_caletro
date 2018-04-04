@@ -5,11 +5,13 @@ import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import expressSession from 'express-session';
+import SocketIO from 'socket.io';
 var sessionStore = require('connect-mongo')(expressSession);
 import task  from './routes/tasks';
 import index from './routes/index';
 
 var app = express();
+// let io = SocketIO(app);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,6 +33,59 @@ app.use(expressSession({
     }),
     cookie: { secure: false }
 }));
+
+
+
+/**
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * Socekt implementation start
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ */
+var clients = [];
+// io.sockets.on('connection', function (socket) {
+
+    /**
+     * On user connection
+     */
+    // socket.on('user connection', (data) => {
+    //     socket.id = data.chatSenderUser;
+    //     clients.push(socket.id);
+    //     clients = Array.from(new Set(clients));
+    //     console.log(clients);
+    //     io.emit('chat users update', { connectedUsers: clients });
+    // });
+    // socket.on('get message', (data) => {
+    //     Operations.getAllMessages(data, (status, response) => {
+    //         switch (status) {
+    //             case 'success':
+    //                 response.sort((a, b) => {
+    //                     return a.time > b.time;
+    //                 });
+
+    //                 io.emit('chat message', response);
+    //                 break;
+    //             case 'err':
+    //                 break;
+    //             default:
+    //         }
+    //     });
+    // });
+// })
+
+/**
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * Socket End
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------
+ */
+
 
 // Allow cross origin resource sharing (CORS) within our application
 app.use(function(req, res, next) {

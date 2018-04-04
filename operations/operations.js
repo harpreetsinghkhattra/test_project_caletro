@@ -594,16 +594,19 @@ export class Operations {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
                         bookings.insert({
-                            lawerId: obj.lid,
-                            userId: obj.uid,
-                            date: moment.tz(new Date(), TIME_ZONE).format(),
-                            from: moment.tz(new Date(), TIME_ZONE).format(),
-                            to: moment.tz(new Date(), TIME_ZONE).format(),
+                            lawerId: obj.lawyerId,
+                            userId: obj.userId,
+                            date: moment.tz(obj.date, TIME_ZONE).format(),
+                            from: moment.tz(obj.from, TIME_ZONE).format(),
+                            to: moment.tz(obj.to, TIME_ZONE).format(),
                             preliminaryNotes: obj.preliminaryNotes,
                             serviceType: obj.serviceType,
+                            services: obj.services,
                             cost: obj.cost,
                             activeStatus: false,
                             status: 0,
+                            clientReadStatus: 0,
+                            lawyerReadStatus: 0,
                             deletedStatus: 0,
                             createdTime: moment.tz(new Date(), TIME_ZONE).format(),
                             updatedTime: moment.tz(new Date(), TIME_ZONE).format()
@@ -645,4 +648,187 @@ export class Operations {
             }
         });
     }
+
+    /**
+     * Get booking
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static getBookings(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.find({ _id: new ObjectId(obj.bookingId), lawyerId: obj.lawyerId, deletedStatus: 0 }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data[0], cb);
+                            else CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Deny booking
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static denyBooking(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.find({ _id: new ObjectId(obj.bookingId), lawerId: obj.lawyerId, deletedStatus: 0 }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                bookings.update({ _id: new ObjectId(obj.bookingId), lawerId: obj.lawyerId, }, {
+                                    $set: {
+                                        deletedStatus: 1,
+                                        updatedTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                    }
+                                }, (err, success) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+                                        var temp = data[0];
+                                        CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+                                    }
+                                });
+                            }
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * All client bookings
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static allClientBookings(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+                console.log(obj);
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.find({ lawerId: obj.lawyerId, userId: obj.clientId, deletedStatus: 0 }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Get all lawyer bookings
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static getAllLawyerBookings(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+                console.log(obj);
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.find({ lawerId: obj.lawyerId, deletedStatus: 0 }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Change booking view status
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static changeBookingViewStatus(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+                console.log(obj);
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.find({ _id: new ObjectId(obj.bookingId), lawerId: obj.lawyerId, deletedStatus: 0, status: 0 }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                bookings.update({ _id: new ObjectId(obj.bookingId), lawerId: obj.lawyerId, }, {
+                                    $set: {
+                                        clientReadStatus: 1,
+                                        updatedTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                    }
+                                }, (err, success) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+                                        var temp = data[0];
+                                        CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+                                    }
+                                });
+                            }
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Get all unread bookings
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static getUnreadBookings(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+                console.log(obj);
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.find({ userId: obj.clientId, deletedStatus: 0, clientReadStatus: 0 }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
 }
+
