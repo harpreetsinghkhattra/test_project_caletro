@@ -695,7 +695,7 @@ export class Operations {
                             if (data && data.length !== 0) {
                                 bookings.update({ _id: new ObjectId(obj.bookingId), lawerId: obj.lawyerId, }, {
                                     $set: {
-                                        deletedStatus: 1,
+                                        deletedStatus: CommonJSInstance.CLIENT_DENYING_BOOKING === obj.deleteType ? CommonJSInstance.CLIENT_DENYING_BOOKING : CommonJSInstance.LAWYER_DENYING_BOOKING,
                                         updatedTime: moment.tz(new Date(), TIME_ZONE).format(),
                                     }
                                 }, (err, success) => {
@@ -751,13 +751,66 @@ export class Operations {
             else {
                 var users = db.collection('users');
                 var bookings = db.collection('bookings');
+                var lawyerClients = db.collection('lawyerClients');
+
                 console.log(obj);
                 users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
                         bookings.find({ lawerId: obj.lawyerId, deletedStatus: 0 }).toArray((err, data) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
-                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+                            if (data && data.length !== 0) {
+                                // CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+
+                                users.find({}).toArray((err, usersData) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    if (usersData && usersData.length !== 0) {
+
+                                        lawyerClients.find({ lawerId: obj.lawyerId }).toArray((err, lawyerClient) => {
+                                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                            if (lawyerClient && lawyerClient.length !== 0) {
+
+                                                usersData = usersData.concat(lawyerClient);
+                                                //Repeated code
+                                                var b_count = 0;
+                                                var u_count = 0;
+                                                data.forEach((booking, index) => {
+                                                    u_count = 0;
+                                                    usersData.forEach((user, j) => {
+                                                        if (booking.userId.toString() === user._id.toString()) booking.clientData = user;
+                                                        
+                                                        if (booking.lawerId.toString() === user._id.toString()) booking.lawyedData = user;
+                                                        
+                                                        if (usersData.length - 1 == u_count) b_count += 1;
+
+                                                        if (data.length === b_count && usersData.length - 1 == u_count) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+
+                                                        u_count += 1;
+                                                    });
+                                                });
+                                            } else {
+                                                //Repeated code
+                                                var b_count = 0;
+                                                var u_count = 0;
+                                                data.forEach((booking, index) => {
+                                                    u_count = 0;
+                                                    usersData.forEach((user, j) => {
+                                                        if (booking.userId.toString() === user._id.toString()) booking.clientData = user;
+                                                        
+                                                        if (booking.lawerId.toString() === user._id.toString()) booking.lawyedData = user;
+                                                        
+                                                        if (usersData.length - 1 == u_count) b_count += 1;
+
+                                                        if (data.length === b_count && usersData.length - 1 == u_count) CommonJs.close(client, CommonJSInstance.SUCCESS, data, cb);
+
+                                                        u_count += 1;
+                                                    });
+                                                });
+                                            }
+                                        })
+                                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                                });
+                            }
                             else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
                         });
                     } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);

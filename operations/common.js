@@ -19,6 +19,9 @@ export class CommonJs {
         this.UNVOTE = "unVote";
         this.BASE_URL = "http://34.223.229.37";
         this.EMAIL_PRESENT = "emailPresent";
+
+        this.CLIENT_DENYING_BOOKING = 2;
+        this.LAWYER_DENYING_BOOKING = 1;
     }
 
     /**

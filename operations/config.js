@@ -17,7 +17,7 @@ module.exports = {
         clientBookings: ["id", "accessToken", "lawyerId", "clientId"],
         getLawyerClientInfo: ["id", "accessToken", "cid"],
         getBookingInfo: ["id", "accessToken", "lawerId", "bookingId"],
-        denyBooking: ["id", "accessToken", "lawerId", "bookingId"],
+        denyBooking: ["id", "accessToken", "lawyerId", "bookingId", "deleteType"],
         getAllBookings : ["id", "accessToken", "lawyerId"],
         changeViewBookingStatus: ["id", "accessToken", "lawyerId", "bookingId"],
         getAllUnreadClientBookings: ["id", "accessToken", "clientId"],
