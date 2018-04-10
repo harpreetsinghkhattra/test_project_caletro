@@ -15,11 +15,14 @@ module.exports = {
         getAllLawyerClients: ["id", "accessToken"],
         registerBookingFromLawyer: ["id", "accessToken", "lawyerId", "userId", "date", "from", "to", "preliminaryNotes", "serviceType", "cost", "activeStatus", "services"],
         clientBookings: ["id", "accessToken", "lawyerId", "clientId"],
-        getLawyerClientInfo: ["id", "accessToken", "cid"],
+        getClientInfo: ["id", "accessToken", "cid"],
         getBookingInfo: ["id", "accessToken", "lawerId", "bookingId"],
         denyBooking: ["id", "accessToken", "lawyerId", "bookingId", "deleteType"],
         getAllBookings : ["id", "accessToken", "lawyerId"],
         changeViewBookingStatus: ["id", "accessToken", "lawyerId", "bookingId"],
         getAllUnreadClientBookings: ["id", "accessToken", "clientId"],
+        logout: ["id", "accessToken"],
+        recentLawyers : ["id", "accessToken"],
+        getUserInfo : ["id", "accessToken", "uid"]
     }
 }

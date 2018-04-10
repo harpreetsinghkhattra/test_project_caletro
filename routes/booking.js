@@ -65,9 +65,9 @@ routes.post('/lawyer/registerBooking', (req, res) => {
 });
 
 routes.post('/lawyer/getClientInfo', (req, res) => {
-    CommonJs.validate("getLawyerClientInfo", req.body, (status, emptyKeys) => {
+    CommonJs.validate("getClientInfo", req.body, (status, emptyKeys) => {
         if (status) {
-            Operations.getLaywerClientInfo(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+            Operations.getClientInfo(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
         } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
     });
 });
@@ -120,4 +120,19 @@ routes.post('/lawyer/getAllUnreadBookings', (req, res) => {
     });
 });
 
+routes.post('/lawyer/recentLawyers', (req, res) => {
+    CommonJs.validate("recentLawyers", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getRecentLawyers(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/getUserInfo', (req, res) => {
+    CommonJs.validate("getUserInfo", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getUserInfo(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
 module.exports = routes;

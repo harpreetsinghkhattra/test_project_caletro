@@ -70,7 +70,7 @@ router.post('/resetPassword', (req, res) => {
 });
 
 /** Verification */
-router.post('/verification', (req, res) => {    
+router.post('/verification', (req, res) => {
     CommonJs.validate("verification", req.body, (status, emptyKeys) => {
         if (status) {
             Operations.verification(req.body, (status, response) => {
@@ -81,7 +81,7 @@ router.post('/verification', (req, res) => {
 });
 
 /** Social Login */
-router.post('/socialMediaLogin', (req, res) => {    
+router.post('/socialMediaLogin', (req, res) => {
     CommonJs.validate("socialMediaLogin", req.body, (status, emptyKeys) => {
         if (status) {
             Operations.socialLogin(req.body, (status, response) => {
@@ -92,8 +92,8 @@ router.post('/socialMediaLogin', (req, res) => {
 });
 
 /** Social Registeration */
-router.post('/socialMediaRegisteration', (req, res) => {  
-    console.log('req.body : ', req.body);  
+router.post('/socialMediaRegisteration', (req, res) => {
+    console.log('req.body : ', req.body);
     CommonJs.validate("socialMediaRegisteration", req.body, (status, emptyKeys) => {
         if (status) {
             Operations.socialRegisteration(req.body, (status, response) => {
@@ -104,11 +104,22 @@ router.post('/socialMediaRegisteration', (req, res) => {
 });
 
 /** Resend token */
-router.post('/resendVerificationToken', (req, res) => {  
-    console.log('req.body : ', req.body);  
+router.post('/resendVerificationToken', (req, res) => {
+    console.log('req.body : ', req.body);
     CommonJs.validate("resendVerificationToken", req.body, (status, emptyKeys) => {
         if (status) {
             Operations.resendVerificationToken(req.body, (status, response) => {
+                CommonJs.httpResponse(req, res, status, response);
+            });
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    })
+});
+
+/** Logout token */
+router.post('/logout', (req, res) => {
+    CommonJs.validate("logout", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.logout(req.body, (status, response) => {
                 CommonJs.httpResponse(req, res, status, response);
             });
         } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
