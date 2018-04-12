@@ -22,6 +22,9 @@ export class CommonJs {
 
         this.CLIENT_DENYING_BOOKING = 2;
         this.LAWYER_DENYING_BOOKING = 1;
+
+        this.BOOKING_STATUS_ACTIVE = 'active';
+        this.BOOKING_STATUS_PENDING = 'pending';
     }
 
     /**
@@ -157,7 +160,7 @@ export class CommonJs {
     }
 
     /**
-     * Mogo response while operation has done
+     * Lawyerup response while operation has done
      * @param {*request} req 
      * @param {*response} res 
      * @param {*string} status 
@@ -278,6 +281,106 @@ export class CommonJs {
     }
 
     /**
+     * Lawyerup response while operation has done
+     * @param {*string} status 
+     * @param {*array|object} response 
+     */
+    static socketResponse(status, response) {
+        switch (status) {
+            case 'success':
+                return {
+                    status: 200,
+                    code: 1,
+                    data: response,
+                    message: "Success",
+                    emptyKeys: null,
+                    error: false
+                };
+            case 'err':
+                return {
+                    status: 400,
+                    code: 1,
+                    data: [],
+                    message: "Error",
+                    emptyKeys: null,
+                    error: false
+                };
+            case 'notValid':
+                return {
+                    code: 1,
+                    status: 401,
+                    data: [],
+                    message: "NotValid",
+                    emptyKeys: null,
+                    error: false
+                };
+            case 'present':
+                return {
+                    code: 1,
+                    status: 400,
+                    data: response,
+                    message: "Present",
+                    emptyKeys: null,
+                    error: false
+                };
+            case 'noValue':
+                return {
+                    code: 1,
+                    status: 400,
+                    data: [],
+                    message: "NoValue",
+                    emptyKeys: null,
+                    error: false
+                };
+            case 'objEmpty':
+                return {
+                    code: 1,
+                    status: 400,
+                    data: [],
+                    message: "ObjEmpty",
+                    emptyKeys: null,
+                    error: false
+                };
+            case "validationErr":
+                return {
+                    code: 1,
+                    status: 400,
+                    data: [],
+                    message: "ValidationError",
+                    emptyKeys: response,
+                    error: false
+                };
+            case "verificationErr":
+                return {
+                    code: 1,
+                    status: 401,
+                    data: [],
+                    message: "VarificationError",
+                    emptyKeys: response,
+                    error: false
+                };
+            case "emailPresent":
+                return {
+                    code: 1,
+                    status: 200,
+                    data: response,
+                    message: "EmailPresent",
+                    emptyKeys: [],
+                    error: false
+                };
+            default:
+                return {
+                    code: 1,
+                    status: 500,
+                    data: [],
+                    message: "InternalServerError",
+                    emptyKeys: null,
+                    error: false
+                };
+        }
+    }
+
+    /**
      * Check for, is data array format?
      * @param {*object} obj 
      * @param {*function} cb 
@@ -289,6 +392,15 @@ export class CommonJs {
         } else {
             cb(status, response);
         }
+    }
+
+    /**
+     * Merge objects
+     * @param {*object} obj 
+     * @param {*function} oldObj 
+     */
+    static mergeObject(obj, oldObj) {
+        return Object.assign(obj, oldObj)
     }
 
     /**

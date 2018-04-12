@@ -42,29 +42,38 @@ io.sockets.on('connection', function (socket) {
    * On user connection
    */
   socket.on('user connection', (data) => {
-    socket.id = data.user;
+    socket.id = data.chatSenderUser;
     clients.push(socket.id);
     clients = Array.from(new Set(clients));
-    console.log(data);
-    io.emit('update users', { connectedUsers: clients });
+    console.log(clients);
+    io.emit('chat users update', { connectedUsers: clients });
   });
 
-  socket.on('getAllUnreadClientBookings', (data) => {
-    CommonJs.validate("getAllUnreadClientBookings", data, (status, emptyKeys) => {
+  socket.on('getUnreadAndDeniedBookingsForLawyer', (data) => {
+    CommonJs.validate("getUnreadAndDeniedBookingsForLawyer", data, (status, emptyKeys) => {
       if (status) {
-        console.log(data);
-        Operations.getUnreadBookings(data, (status, response) => io.emit('get all unread client bookings data', { code: 200, message: CommonJsInstance.SUCCESS, data: response, error: false, clientId: data.clientId }));
-      } else io.emit('get all unread client bookings data', { code: 400, message: CommonJsInstance.VALIDATE_ERROR, data: emptyKeys, error: true, clientId: data.clientId });
+        Operations.getUnreadAndDeniedBookingsForLawyer(data, (status, response) => io.emit('responseUnreadAndDeniedBookingsForLawyer', CommonJs.mergeObject({ userId: data.lawyerId }, CommonJs.socketResponse(status, response))));
+      } else io.emit('responseUnreadAndDeniedBookingsForLawyer', CommonJs.mergeObject({ userId: data.lawyerId }, CommonJs.socketResponse(status, response)));
     });
   });
 
-  socket.on('disconnect', function () {
-    if (clients.indexOf(socket.id) > -1) {
-      clients.splice(clients.indexOf(socket.id), 1);
-    }
-    io.emit('users disconnected', { connectedUser: socket.id });
+  socket.on('get message', (data) => {
+    Operations.getAllMessages(data, (status, response) => {
+      switch (status) {
+        case 'success':
+          response.sort((a, b) => {
+            return a.time > b.time;
+          });
+
+          io.emit('chat message', response);
+          break;
+        case 'err':
+          break;
+        default:
+      }
+    });
   });
-});
+})
 
 /**
  * --------------------------------------------------------------------------------------------

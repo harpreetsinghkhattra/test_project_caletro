@@ -135,4 +135,36 @@ routes.post('/lawyer/getUserInfo', (req, res) => {
         } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
     });
 });
+
+routes.post('/lawyer/getUnreadAndDeniedBookingsForLawyer', (req, res) => {
+    CommonJs.validate("getUnreadAndDeniedBookingsForLawyer", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getUnreadAndDeniedBookingsForLawyer(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/getAllClientBookings', (req, res) => {
+    CommonJs.validate("getAllClientBookings", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getAllClientBookings(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/acceptBooking', (req, res) => {
+    CommonJs.validate("acceptBooking", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.acceptBooking(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
+
+routes.post('/lawyer/getNewBookingRequests', (req, res) => {
+    CommonJs.validate("getNewBookingRequests", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getNewBookingRequests(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+});
 module.exports = routes;
