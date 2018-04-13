@@ -1075,6 +1075,7 @@ export class Operations {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
                         bookings.find({ lawerId: obj.lawyerId, lawyerReadStatus: 0, deletedStatus: 0, activeStatus: 'pending', lawyerReadStatusForBookingRequest: { $ne: CommonJSInstance.CLIENT_BOOKING_REQUEST_VIEWED_LAWYER_STATUS_ACTIVE } }).toArray((err, bookingRequests) => {
+                            // bookings.find({ lawerId: obj.lawyerId, lawyerReadStatus: 0, deletedStatus: 0, activeStatus: 'pending' }).toArray((err, bookingRequests) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                             if (bookingRequests && bookingRequests.length !== 0) {
                                 bookings.find({ lawerId: obj.lawyerId, lawyerReadStatus: 0, deletedStatus: { $ne: 0 } }).toArray((err, denyBookings) => {
@@ -1082,12 +1083,6 @@ export class Operations {
                                     if (denyBookings && denyBookings.length !== 0) {
                                         let temp = bookingRequests.concat(denyBookings);
                                         temp.sort((a, b) => new Date(a.from) > new Date(b.from));
-
-
-
-
-
-
 
                                         users.find({}).toArray((err, usersData) => {
                                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
@@ -1126,20 +1121,58 @@ export class Operations {
                                         });
 
 
-
-
-
-
-
                                         // CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
                                     }
-                                    else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                                    else {
+                                        if (bookingRequests.length !== 0) {
+                                            let temp = bookingRequests;
+                                            temp.sort((a, b) => new Date(a.from) > new Date(b.from));
+
+
+                                            users.find({}).toArray((err, usersData) => {
+                                                if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                                if (usersData && usersData.length !== 0) {
+
+                                                    var b_count = 0;
+                                                    var u_count = 0;
+                                                    temp.forEach((booking, index) => {
+                                                        u_count = 0;
+                                                        usersData.forEach((user, j) => {
+                                                            if (booking.userId.toString() === user._id.toString()) booking.clientData = user;
+
+                                                            if (booking.lawerId.toString() === user._id.toString()) booking.lawyedData = user;
+
+                                                            if (usersData.length - 1 == u_count) b_count += 1;
+
+                                                            if (temp.length === b_count && usersData.length - 1 == u_count) {
+                                                                // Check for date
+                                                                // CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+
+                                                                let temp1 = [];
+                                                                let countCT = 0;
+                                                                temp.forEach((element, index) => {
+                                                                    if (new Date(element.from) > new Date()) temp1.push(element);
+                                                                    if (temp.length - 1 === countCT) {
+                                                                        CommonJs.close(client, CommonJSInstance.SUCCESS, temp1, cb);
+                                                                    }
+                                                                    countCT += 1;
+                                                                });
+                                                            }
+
+                                                            u_count += 1;
+                                                        });
+                                                    });
+                                                } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                                            });
+                                        } else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                                    }
                                 });
                             }
                             else {
                                 bookings.find({ lawerId: obj.lawyerId, lawyerReadStatusForDenyBooking: 0, deletedStatus: { $ne: 0 } }).toArray((err, denyBookings) => {
+                                    // bookings.find({ lawerId: obj.lawyerId, deletedStatus: { $ne: 0 } }).toArray((err, denyBookings) => {
                                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
-                                    if (data && data.length !== 0) {
+                                    if (denyBookings && denyBookings.length !== 0) {
                                         denyBookings.sort((a, b) => new Date(a.from) > new Date(b.from));
 
                                         users.find({}).toArray((err, usersData) => {
@@ -1382,7 +1415,6 @@ export class Operations {
             else {
                 var users = db.collection('users');
                 var bookings = db.collection('bookings');
-                console.log(obj);
                 users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
@@ -1445,7 +1477,49 @@ export class Operations {
 
                                         // CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
                                     }
-                                    else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                                    else {
+                                        if (bookingRequests && bookingRequests.length !== 0) {
+                                            let temp = bookingRequests
+                                            temp.sort((a, b) => new Date(a.from) > new Date(b.from));
+
+
+                                            users.find({}).toArray((err, usersData) => {
+                                                if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                                if (usersData && usersData.length !== 0) {
+
+                                                    var b_count = 0;
+                                                    var u_count = 0;
+                                                    temp.forEach((booking, index) => {
+                                                        u_count = 0;
+                                                        usersData.forEach((user, j) => {
+                                                            if (booking.userId.toString() === user._id.toString()) booking.clientData = user;
+
+                                                            if (booking.lawerId.toString() === user._id.toString()) booking.lawyedData = user;
+
+                                                            if (usersData.length - 1 == u_count) b_count += 1;
+
+                                                            if (temp.length === b_count && usersData.length - 1 == u_count) {
+                                                                // Check for date
+                                                                // CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+
+                                                                let temp1 = [];
+                                                                let countCT = 0;
+                                                                temp.forEach((element, index) => {
+                                                                    if (new Date(element.from) > new Date()) temp1.push(element);
+                                                                    if (temp.length - 1 === countCT) {
+                                                                        CommonJs.close(client, CommonJSInstance.SUCCESS, temp1, cb);
+                                                                    }
+                                                                    countCT += 1;
+                                                                });
+                                                            }
+
+                                                            u_count += 1;
+                                                        });
+                                                    });
+                                                } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                                            });
+                                        } else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                                    }
                                 });
                             }
                             else {
