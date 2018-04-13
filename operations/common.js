@@ -25,6 +25,9 @@ export class CommonJs {
 
         this.BOOKING_STATUS_ACTIVE = 'active';
         this.BOOKING_STATUS_PENDING = 'pending';
+
+        this.CLIENT_BOOKING_REQUEST_VIEWED_LAWYER_STATUS_ACTIVE = 1;
+        this.LAWYER_BOOKING_ACCEPTED_VIEWED_CLIENT_STATUS_ACTIVE = 1;
     }
 
     /**

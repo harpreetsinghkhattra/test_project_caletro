@@ -24,9 +24,14 @@ module.exports = {
         logout: ["id", "accessToken"],
         recentLawyers: ["id", "accessToken"],
         getUserInfo: ["id", "accessToken", "uid"],
+
         getUnreadAndDeniedBookingsForLawyer: ["id", "accessToken", "lawyerId"],
         getAllClientBookings: ["id", "accessToken"],
         acceptBooking: ["id", "accessToken", "bookingId"],
-        getNewBookingRequests: ["id", "accessToken"]
+        getNewBookingRequests: ["id", "accessToken"],
+
+        markAsViewedBookingRequestByLawyer: ["id", "accessToken", "bookingId"],
+        getUnreadAndDeniedBookingsForClient: ["id", "accessToken", "clientId"],
+        markAsViewedBookingRequestByClient: ["id", "accessToken", "bookingId"]
     }
 }

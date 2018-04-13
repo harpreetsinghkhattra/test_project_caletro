@@ -57,6 +57,33 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  /** Mark as read booking request */
+  socket.on('markAsViewedBookingRequestByLawyer', (data) => {
+    CommonJs.validate("markAsViewedBookingRequestByLawyer", data, (status, emptyKeys) => {
+      if (status) {
+        Operations.markAsViewedBookingRequestByLawyer(data, (status, response) => io.emit('responseOfMarkAsViewedBookingRequestByLawyer', CommonJs.mergeObject({ userId: data.id }, CommonJs.socketResponse(status, response))));
+      } else io.emit('responseOfMarkAsViewedBookingRequestByLawyer', CommonJs.mergeObject({ userId: data.id }, CommonJs.socketResponse(status, response)));
+    });
+  });
+
+  /** Get all unread accepted and denyied bookings for client */
+  socket.on('getUnreadAndDeniedBookingsForClient', (data) => {
+    CommonJs.validate("getUnreadAndDeniedBookingsForClient", data, (status, emptyKeys) => {
+      if (status) {
+        Operations.getUnreadAndDeniedBookingsForClient(data, (status, response) => io.emit('responseUnreadAndDeniedBookingsForClient', CommonJs.mergeObject({ userId: data.clientId }, CommonJs.socketResponse(status, response))));
+      } else io.emit('responseUnreadAndDeniedBookingsForClient', CommonJs.mergeObject({ userId: data.clientId }, CommonJs.socketResponse(status, response)));
+    });
+  });
+
+  /** Mark as read booking request */
+  socket.on('markAsViewedBookingRequestByClient', (data) => {
+    CommonJs.validate("markAsViewedBookingRequestByClient", data, (status, emptyKeys) => {
+      if (status) {
+        Operations.markAsViewedBookingRequestByClient(data, (status, response) => io.emit('responseOfMarkAsViewedBookingRequestByClient', CommonJs.mergeObject({ userId: data.id }, CommonJs.socketResponse(status, response))));
+      } else io.emit('responseOfMarkAsViewedBookingRequestByClient', CommonJs.mergeObject({ userId: data.id }, CommonJs.socketResponse(status, response)));
+    });
+  });
+
   socket.on('get message', (data) => {
     Operations.getAllMessages(data, (status, response) => {
       switch (status) {
