@@ -1078,7 +1078,7 @@ export class Operations {
                             // bookings.find({ lawerId: obj.lawyerId, lawyerReadStatus: 0, deletedStatus: 0, activeStatus: 'pending' }).toArray((err, bookingRequests) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                             if (bookingRequests && bookingRequests.length !== 0) {
-                                bookings.find({ lawerId: obj.lawyerId, lawyerReadStatus: 0, deletedStatus: { $ne: 0 } }).toArray((err, denyBookings) => {
+                                bookings.find({ lawerId: obj.lawyerId, lawyerReadStatusForDenyBooking: 0, deletedStatus: { $ne: 0 } }).toArray((err, denyBookings) => {
                                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                                     if (denyBookings && denyBookings.length !== 0) {
                                         let temp = bookingRequests.concat(denyBookings);
@@ -1575,5 +1575,44 @@ export class Operations {
         });
     }
 
+    /**
+     * Mark as viewDenyBooking
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static markAsViewedDenyBooking(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var bookings = db.collection('bookings');
+
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        bookings.find({ _id: new ObjectId(obj.bookingId), deletedStatus: {$ne : 0} }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                bookings.update({ _id: new ObjectId(obj.bookingId) }, {
+                                    $set: {
+                                        clientReadStatusForDenyBooking: obj.userType === CommonJSInstance.CLIENT ? CommonJSInstance.CLIENT : 0,
+                                        lawyerReadStatusForDenyBooking: obj.userType === CommonJSInstance.LAWYER ? CommonJSInstance.LAWYER : 0,
+                                        updatedTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                    }
+                                }, (err, success) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+                                        var temp = data[0];
+                                        CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+                                    }
+                                });
+                            }
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
 }
 

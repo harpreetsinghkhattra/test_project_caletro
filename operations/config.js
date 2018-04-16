@@ -32,6 +32,8 @@ module.exports = {
 
         markAsViewedBookingRequestByLawyer: ["id", "accessToken", "bookingId"],
         getUnreadAndDeniedBookingsForClient: ["id", "accessToken", "clientId"],
-        markAsViewedBookingRequestByClient: ["id", "accessToken", "bookingId"]
+        markAsViewedBookingRequestByClient: ["id", "accessToken", "bookingId"],
+
+        markAsViewedDenyBooking: ["id", "accessToken", "bookingId", "userType"]
     }
 }

@@ -84,6 +84,15 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  /** Mark as viewed deny booking */
+  socket.on('markAsViewedDenyBooking', (data) => {
+    CommonJs.validate("markAsViewedDenyBooking", data, (status, emptyKeys) => {
+      if (status) {
+        Operations.markAsViewedDenyBooking(data, (status, response) => io.emit('responseOfMarkAsViewedDenyBooking', CommonJs.mergeObject({ userId: data.id }, CommonJs.socketResponse(status, response))));
+      } else io.emit('responseOfMarkAsViewedDenyBooking', CommonJs.mergeObject({ userId: data.id }, CommonJs.socketResponse(status, response)));
+    });
+  });
+
   socket.on('get message', (data) => {
     Operations.getAllMessages(data, (status, response) => {
       switch (status) {

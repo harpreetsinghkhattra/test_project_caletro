@@ -28,6 +28,9 @@ export class CommonJs {
 
         this.CLIENT_BOOKING_REQUEST_VIEWED_LAWYER_STATUS_ACTIVE = 1;
         this.LAWYER_BOOKING_ACCEPTED_VIEWED_CLIENT_STATUS_ACTIVE = 1;
+
+        this.LAWYER = 1;
+        this.CLIENT = 2
     }
 
     /**
