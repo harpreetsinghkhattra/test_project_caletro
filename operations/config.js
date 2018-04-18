@@ -22,6 +22,7 @@ module.exports = {
         changeViewBookingStatus: ["id", "accessToken", "lawyerId", "bookingId"],
         getAllUnreadClientBookings: ["id", "accessToken", "clientId"],
         logout: ["id", "accessToken"],
+        isLogedIn: ["id", "accessToken"],
         recentLawyers: ["id", "accessToken"],
         getUserInfo: ["id", "accessToken", "uid"],
 
@@ -34,6 +35,10 @@ module.exports = {
         getUnreadAndDeniedBookingsForClient: ["id", "accessToken", "clientId"],
         markAsViewedBookingRequestByClient: ["id", "accessToken", "bookingId"],
 
-        markAsViewedDenyBooking: ["id", "accessToken", "bookingId", "userType"]
+        markAsViewedDenyBooking: ["id", "accessToken", "bookingId", "userType"],
+
+        editLawyerProfile: ["id", "accessToken", "name", "qualifications", "phone", "name", "email"],
+        editClientProfile: ["id", "accessToken", "name", "dob", "phone", "name", "email"],
+        addServices: ["id", "accessToken", "name", "description", "price", "notes", "duration"]
     }
 }

@@ -167,4 +167,12 @@ routes.post('/lawyer/getNewBookingRequests', (req, res) => {
         } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
     });
 });
+
+routes.post('/addServices', (req, res) => {
+    CommonJs.validate("addServices", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.addServices(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
+})
 module.exports = routes;

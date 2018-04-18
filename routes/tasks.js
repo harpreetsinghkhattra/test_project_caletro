@@ -7,6 +7,7 @@ import fs from 'fs';
 
 /** Apis */
 import Booking from './booking';
+import Profile from './profile';
 
 /** Route */
 var router = express.Router();
@@ -126,8 +127,22 @@ router.post('/logout', (req, res) => {
     })
 });
 
+/** Is user loged in */
+router.post('/isLogedIn', (req, res) => {
+    CommonJs.validate("isLogedIn", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.isUserLoggedIn(req.body, (status, response) => {
+                CommonJs.httpResponse(req, res, status, response);
+            });
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    })
+});
+
 /** Booking apis */
 router.use('/booking', Booking);
+
+/** Profile apis */
+router.use('/', Profile);
 
 /** Media files api */
 router.use('/', media);

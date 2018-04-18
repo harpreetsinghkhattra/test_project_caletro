@@ -19,6 +19,8 @@ export class CommonJs {
         this.UNVOTE = "unVote";
         this.BASE_URL = "http://34.223.229.37";
         this.EMAIL_PRESENT = "emailPresent";
+        this.LOGED_IN = "logedIn";
+        this.LOGED_OUT = "logedOut"
 
         this.CLIENT_DENYING_BOOKING = 2;
         this.LAWYER_DENYING_BOOKING = 1;
@@ -30,7 +32,10 @@ export class CommonJs {
         this.LAWYER_BOOKING_ACCEPTED_VIEWED_CLIENT_STATUS_ACTIVE = 1;
 
         this.LAWYER = 1;
-        this.CLIENT = 2
+        this.CLIENT = 2;
+
+        this.NO_CHANGE = 'noChange';
+        this.CHANGE = "change";
     }
 
     /**
@@ -269,6 +274,28 @@ export class CommonJs {
                         status: 200,
                         data: response,
                         message: "EmailPresent",
+                        emptyKeys: [],
+                        error: false
+                    })
+                break;
+            case "logedIn":
+                res.status(200)
+                    .json({
+                        code: 1,
+                        status: 200,
+                        data: response,
+                        message: "LogedIn",
+                        emptyKeys: [],
+                        error: false
+                    })
+                break;
+            case "logedOut":
+                res.status(200)
+                    .json({
+                        code: 1,
+                        status: 200,
+                        data: response,
+                        message: "LogedOut",
                         emptyKeys: [],
                         error: false
                     })

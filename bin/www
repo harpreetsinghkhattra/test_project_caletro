@@ -50,6 +50,8 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('getUnreadAndDeniedBookingsForLawyer', (data) => {
+    console.log('data', data);
+    
     CommonJs.validate("getUnreadAndDeniedBookingsForLawyer", data, (status, emptyKeys) => {
       if (status) {
         Operations.getUnreadAndDeniedBookingsForLawyer(data, (status, response) => io.emit('responseUnreadAndDeniedBookingsForLawyer', CommonJs.mergeObject({ userId: data.lawyerId }, CommonJs.socketResponse(status, response))));
@@ -68,6 +70,8 @@ io.sockets.on('connection', function (socket) {
 
   /** Get all unread accepted and denyied bookings for client */
   socket.on('getUnreadAndDeniedBookingsForClient', (data) => {
+    console.log('data', data);
+    
     CommonJs.validate("getUnreadAndDeniedBookingsForClient", data, (status, emptyKeys) => {
       if (status) {
         Operations.getUnreadAndDeniedBookingsForClient(data, (status, response) => io.emit('responseUnreadAndDeniedBookingsForClient', CommonJs.mergeObject({ userId: data.clientId }, CommonJs.socketResponse(status, response))));

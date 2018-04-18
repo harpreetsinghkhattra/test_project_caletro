@@ -22,39 +22,45 @@ export class Operations {
             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
             else {
                 var collection = db.collection('users');
-                CommonJs.randomPassword(obj.email.toLowerCase(), obj.password, (password, salt) => {
-                    collection.find({ email: obj.email.toLowerCase(), password: password }).toArray((err, data) => {
-                        if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
-                        if (data && data.length !== 0) {
-                            console.log(data[0]);
-                            if (data[0].verificationCode === 1) {
-                                var temp = data[0];
-                                temp.password = "xxxxxx";
-                                temp.salt = "xxxxxx";
-                                CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
-                                // CommonJs.generateToken(obj.email.toLowerCase(), (TOKEN, salt) => {
-                                //     if (TOKEN) {
-                                //         collection.update({ email: obj.email.toLowerCase(), password: password }, {
-                                //             $set: {
-                                //                 userAccessToken: TOKEN,
-                                //                 updatedTime: new Date().getTime()
-                                //             }
-                                //         }, (err, success) => {
-                                //             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
-                                //             else {
-                                //                 var temp = data[0];
-                                //                 temp.password = "xxxxxx";
-                                //                 temp.salt = "xxxxxx";
-                                //                 temp.userAccessToken = TOKEN;
-                                //                 CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
-                                //             }
-                                //         });
-                                //     } else CommonJs.close(client, CommonJSInstance.TOKEN_ERROR, [], cb);
-                                // });
-                            } else CommonJs.close(client, CommonJSInstance.VARIFICATION_ERROR, [], cb);
-                        } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
-                    })
-                })
+                collection.find({ email: obj.email.toLowerCase() }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        obj.salt = data[0].salt ? data[0].salt : 'any';
+                        CommonJs.randomPassword(obj.salt, obj.password, (password, salt) => {
+                            collection.find({ email: obj.email.toLowerCase(), password: password }).toArray((err, data) => {
+                                if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                if (data && data.length !== 0) {
+                                    console.log(data[0]);
+                                    if (data[0].verificationCode === 1) {
+                                        var temp = data[0];
+                                        temp.password = "xxxxxx";
+                                        temp.salt = "xxxxxx";
+                                        CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+                                        // CommonJs.generateToken(obj.email.toLowerCase(), (TOKEN, salt) => {
+                                        //     if (TOKEN) {
+                                        //         collection.update({ email: obj.email.toLowerCase(), password: password }, {
+                                        //             $set: {
+                                        //                 userAccessToken: TOKEN,
+                                        //                 updatedTime: new Date().getTime()
+                                        //             }
+                                        //         }, (err, success) => {
+                                        //             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                        //             else {
+                                        //                 var temp = data[0];
+                                        //                 temp.password = "xxxxxx";
+                                        //                 temp.salt = "xxxxxx";
+                                        //                 temp.userAccessToken = TOKEN;
+                                        //                 CommonJs.close(client, CommonJSInstance.SUCCESS, temp, cb);
+                                        //             }
+                                        //         });
+                                        //     } else CommonJs.close(client, CommonJSInstance.TOKEN_ERROR, [], cb);
+                                        // });
+                                    } else CommonJs.close(client, CommonJSInstance.VARIFICATION_ERROR, [], cb);
+                                } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                            })
+                        })
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
             }
         })
     }
@@ -1590,7 +1596,7 @@ export class Operations {
                 users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                     if (data && data.length !== 0) {
-                        bookings.find({ _id: new ObjectId(obj.bookingId), deletedStatus: {$ne : 0} }).toArray((err, data) => {
+                        bookings.find({ _id: new ObjectId(obj.bookingId), deletedStatus: { $ne: 0 } }).toArray((err, data) => {
                             if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
                             if (data && data.length !== 0) {
                                 bookings.update({ _id: new ObjectId(obj.bookingId) }, {
@@ -1614,5 +1620,303 @@ export class Operations {
             }
         });
     }
+
+    /**
+     * Edit lawyer profile 
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static editProfile(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                this.isEmailPresentInAnotherAccountsExceptCurrentOne(obj.id, obj.email, (status) => {
+                    if (status === CommonJSInstance.NO_CHANGE) {
+                        users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken, userType: CommonJSInstance.LAWYER }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                users.update({ email: obj.email.toLowerCase() }, {
+                                    $set: {
+                                        name: obj.name,
+                                        qualification: obj.qualification,
+                                        phone: obj.phone,
+                                        address1: obj.adddress1,
+                                        address2: obj.adddress2,
+                                        address3: obj.adddress3,
+                                        notes: obj.notes,
+                                        areasOfLawAndPractive: obj.areasOfLawAndPractive,
+                                        imagePath: obj.imagePath,
+                                        updatedTime: new Date().getTime()
+                                    }
+                                }, (err, data) => {
+                                    console.log(data);
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
+                                    else CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb);
+                                });
+                            } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                        });
+                    } else if (status === CommonJSInstance.EMAIL_PRESENT) CommonJs.close(client, CommonJSInstance.EMAIL_PRESENT, [], cb);
+                    else if (status === CommonJSInstance.CHANGE) {
+                        users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                users.update({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }, {
+                                    $set: {
+                                        name: obj.name,
+                                        email: obj.email.toLowerCase(),
+                                        qualification: obj.qualification,
+                                        phone: obj.phone,
+                                        address1: obj.adddress1,
+                                        address2: obj.adddress2,
+                                        address3: obj.adddress3,
+                                        notes: obj.notes,
+                                        areasOfLawAndPractive: obj.areasOfLawAndPractive,
+                                        imagePath: obj.imagePath,
+                                        updatedTime: new Date().getTime()
+                                    }
+                                }, (err, data) => {
+                                    console.log(data);
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+
+                                        //Create random password key
+                                        var randomeToken = Math.floor(Math.random() * 1000000) + '';
+                                        CommonJs.randomPassword(obj.email.toLowerCase(), randomeToken, (token, salt) => {
+                                            var mailSentOpt = {
+                                                email: obj.email,
+                                                token: randomeToken
+                                            }
+
+                                            users.update({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken, email: obj.email.toLowerCase() }, {
+                                                $set: {
+                                                    verificationToken: token,
+                                                    verificationCode: 0,
+                                                    updatedTime: new Date().getTime()
+                                                }
+                                            }, (err, data) => {
+                                                if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
+                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb));
+                                            });
+                                        });
+                                    }
+                                });
+                            } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Edit client profile 
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static editClientProfile(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                this.isEmailPresentInAnotherAccountsExceptCurrentOne(obj.id, obj.email, (status) => {
+                    if (status === CommonJSInstance.NO_CHANGE) {
+                        users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken, userType: CommonJSInstance.CLIENT }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                users.update({ email: obj.email.toLowerCase() }, {
+                                    $set: {
+                                        name: obj.name,
+                                        dob: obj.dob,
+                                        phone: obj.phone,
+                                        address1: obj.adddress1,
+                                        address2: obj.adddress2,
+                                        address3: obj.adddress3,
+                                        imagePath: obj.imagePath,
+                                        updatedTime: new Date().getTime()
+                                    }
+                                }, (err, data) => {
+                                    console.log(data);
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
+                                    else CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb);
+                                });
+                            } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                        });
+                    } else if (status === CommonJSInstance.EMAIL_PRESENT) CommonJs.close(client, CommonJSInstance.EMAIL_PRESENT, [], cb);
+                    else if (status === CommonJSInstance.CHANGE) {
+                        users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) {
+                                users.update({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }, {
+                                    $set: {
+                                        name: obj.name,
+                                        email: obj.email.toLowerCase(),
+                                        dob: obj.dob,
+                                        phone: obj.phone,
+                                        address1: obj.adddress1,
+                                        address2: obj.adddress2,
+                                        address3: obj.adddress3,
+                                        imagePath: obj.imagePath,
+                                        updatedTime: new Date().getTime()
+                                    }
+                                }, (err, data) => {
+                                    console.log(data);
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+
+                                        //Create random password key
+                                        var randomeToken = Math.floor(Math.random() * 1000000) + '';
+                                        CommonJs.randomPassword(obj.email.toLowerCase(), randomeToken, (token, salt) => {
+                                            var mailSentOpt = {
+                                                email: obj.email,
+                                                token: randomeToken
+                                            }
+
+                                            users.update({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken, email: obj.email.toLowerCase() }, {
+                                                $set: {
+                                                    verificationToken: token,
+                                                    verificationCode: 0,
+                                                    updatedTime: new Date().getTime()
+                                                }
+                                            }, (err, data) => {
+                                                if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
+                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb));
+                                            });
+                                        });
+                                    }
+                                });
+                            } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Add services
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static addServices(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var services = db.collection('services');
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        services.find({ lawyerId: obj.id }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length === 0) {
+                                services.insert({
+                                    lawyerId: obj.id,
+                                    createdTime: moment.tz(new Date(), TIME_ZONE).format(),
+                                    updatedTime: moment.tz(new Date(), TIME_ZONE).format()
+                                }, (err, data) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    else {
+                                        var response = data.ops[0];
+                                        services.find({ lawyerId: obj.id, 'services.name': obj.name.toLowerCase() }).toArray((err, data) => {
+                                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                            if (data && data.length === 0) {
+                                                services.update({ lawyerId: obj.id }, {
+                                                    $addToSet: {
+                                                        services: {
+                                                            name: obj.name.toLowerCase(),
+                                                            description: obj.description,
+                                                            price: obj.price,
+                                                            frenchise: obj.frenchise,
+                                                            duration: obj.duration,
+                                                            notes: obj.notes
+                                                        }
+                                                    }
+                                                }, (err, data) => {
+                                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                                    else CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb);
+                                                });
+                                            } else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
+                                        });
+                                    }
+                                });
+                            } else {
+                                services.find({ lawyerId: obj.id, 'services.name': obj.name.toLowerCase() }).toArray((err, data) => {
+                                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                    if (data && data.length === 0) {
+                                        services.update({ lawyerId: obj.id }, {
+                                            $addToSet: {
+                                                services: {
+                                                    name: obj.name.toLowerCase(),
+                                                    description: obj.description,
+                                                    price: obj.price,
+                                                    frenchise: obj.frenchise,
+                                                    duration: obj.duration,
+                                                    notes: obj.notes
+                                                }
+                                            }
+                                        }, (err, data) => {
+                                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                                            else CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb);
+                                        });
+                                    } else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
+                                });
+                            }
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Only check for edit client and lawyer profile
+     */
+    static isEmailPresentInAnotherAccountsExceptCurrentOne(id, email, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+
+                // Check in users
+                users.find({ _id: new ObjectId(id), email: email.toLowerCase() }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) cb(CommonJSInstance.NO_CHANGE);
+                    else {
+                        users.find({ email: email.toLowerCase() }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) cb(CommonJSInstance.EMAIL_PRESENT);
+                            else cb(CommonJSInstance.CHANGE);
+                        });
+                    }
+                });
+            }
+        })
+    }
+
+    /**
+     * Is user logged in
+     */
+    static isUserLoggedIn(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+
+                // Check in users
+                users.find({ _id: new ObjectId(obj.id) }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) cb(CommonJSInstance.LOGED_IN);
+                            else CommonJs.close(client, CommonJSInstance.LOGED_OUT, [], cb);
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        })
+    }
+
 }
 
