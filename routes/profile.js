@@ -10,6 +10,7 @@ var routes = express.Router();
 var CommonJsInstance = new CommonJs();
 
 routes.post('/editLawyerProfile', (req, res) => {
+    console.log(req.body);
     CommonJs.validate("editLawyerProfile", req.body, (status, emptyKeys) => {
         if (status) {
 

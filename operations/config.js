@@ -39,6 +39,7 @@ module.exports = {
 
         editLawyerProfile: ["id", "accessToken", "name", "qualifications", "phone", "name", "email"],
         editClientProfile: ["id", "accessToken", "name", "dob", "phone", "name", "email"],
-        addServices: ["id", "accessToken", "name", "description", "price", "notes", "duration"]
+        addServices: ["id", "accessToken", "name", "description", "price", "notes", "duration"],
+        getServices: ["id", "accessToken", "lawyerId"]
     }
 }

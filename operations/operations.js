@@ -219,7 +219,7 @@ export class Operations {
                         //Create random password key
                         obj.randomPassword = Math.floor(Math.random() * 1000000) + '';
 
-                        CommonJs.randomPassword(obj.email.toLowerCase(), obj.randomPassword, (password, salt) => {
+                        CommonJs.randomPassword(data[0].salt, obj.randomPassword, (password, salt) => {
                             console.log(password);
                             collection.update({ email: obj.email.toLowerCase() }, {
                                 $set: {
@@ -432,6 +432,7 @@ export class Operations {
                             collection.update({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }, {
                                 $set: {
                                     password: password,
+                                    salt: salt,
                                     requireResetPassword: false,
                                     updatedTime: new Date().getTime()
                                 }
@@ -1639,14 +1640,15 @@ export class Operations {
                                 users.update({ email: obj.email.toLowerCase() }, {
                                     $set: {
                                         name: obj.name,
-                                        qualification: obj.qualification,
+                                        qualifications: obj.qualifications,
                                         phone: obj.phone,
-                                        address1: obj.adddress1,
-                                        address2: obj.adddress2,
-                                        address3: obj.adddress3,
+                                        address1: obj.address1,
+                                        address2: obj.address2,
+                                        address3: obj.address3,
                                         notes: obj.notes,
-                                        areasOfLawAndPractive: obj.areasOfLawAndPractive,
-                                        imagePath: obj.imagePath,
+                                        areasOfLawAndPractice: obj.areasOfLawAndPractice,
+                                        areasOfPracticeStateIn: obj.areasOfPracticeStateIn,
+                                        imagePath: obj.imagePath ? CommonJSInstance.BASE_URL + obj.imagePath : data[0].imagePath,
                                         updatedTime: new Date().getTime()
                                     }
                                 }, (err, data) => {
@@ -1665,14 +1667,15 @@ export class Operations {
                                     $set: {
                                         name: obj.name,
                                         email: obj.email.toLowerCase(),
-                                        qualification: obj.qualification,
+                                        qualifications: obj.qualifications,
                                         phone: obj.phone,
-                                        address1: obj.adddress1,
-                                        address2: obj.adddress2,
-                                        address3: obj.adddress3,
+                                        address1: obj.address1,
+                                        address2: obj.address2,
+                                        address3: obj.address3,
                                         notes: obj.notes,
-                                        areasOfLawAndPractive: obj.areasOfLawAndPractive,
-                                        imagePath: obj.imagePath,
+                                        areasOfLawAndPractice: obj.areasOfLawAndPractice,
+                                        areasOfPracticeStateIn: obj.areasOfPracticeStateIn,
+                                        imagePath: obj.imagePath ? CommonJSInstance.BASE_URL + obj.imagePath : data[0].imagePath,
                                         updatedTime: new Date().getTime()
                                     }
                                 }, (err, data) => {
@@ -1696,7 +1699,7 @@ export class Operations {
                                                 }
                                             }, (err, data) => {
                                                 if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
-                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb));
+                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS_WITH_EMAIL_CHANGE, [], cb));
                                             });
                                         });
                                     }
@@ -1729,10 +1732,10 @@ export class Operations {
                                         name: obj.name,
                                         dob: obj.dob,
                                         phone: obj.phone,
-                                        address1: obj.adddress1,
-                                        address2: obj.adddress2,
-                                        address3: obj.adddress3,
-                                        imagePath: obj.imagePath,
+                                        address1: obj.address1,
+                                        address2: obj.address2,
+                                        address3: obj.address3,
+                                        imagePath: obj.imagePath ? CommonJSInstance.BASE_URL + obj.imagePath : data[0].imagePath,
                                         updatedTime: new Date().getTime()
                                     }
                                 }, (err, data) => {
@@ -1753,10 +1756,10 @@ export class Operations {
                                         email: obj.email.toLowerCase(),
                                         dob: obj.dob,
                                         phone: obj.phone,
-                                        address1: obj.adddress1,
-                                        address2: obj.adddress2,
-                                        address3: obj.adddress3,
-                                        imagePath: obj.imagePath,
+                                        address1: obj.address1,
+                                        address2: obj.address2,
+                                        address3: obj.address3,
+                                        imagePath: obj.imagePath ? CommonJSInstance.BASE_URL + obj.imagePath : data[0].imagePath,
                                         updatedTime: new Date().getTime()
                                     }
                                 }, (err, data) => {
@@ -1780,7 +1783,7 @@ export class Operations {
                                                 }
                                             }, (err, data) => {
                                                 if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
-                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb));
+                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS_WITH_EMAIL_CHANGE, [], cb));
                                             });
                                         });
                                     }
@@ -1827,7 +1830,6 @@ export class Operations {
                                                             name: obj.name.toLowerCase(),
                                                             description: obj.description,
                                                             price: obj.price,
-                                                            frenchise: obj.frenchise,
                                                             duration: obj.duration,
                                                             notes: obj.notes
                                                         }
@@ -1850,7 +1852,6 @@ export class Operations {
                                                     name: obj.name.toLowerCase(),
                                                     description: obj.description,
                                                     price: obj.price,
-                                                    frenchise: obj.frenchise,
                                                     duration: obj.duration,
                                                     notes: obj.notes
                                                 }
@@ -1862,6 +1863,31 @@ export class Operations {
                                     } else CommonJs.close(client, CommonJSInstance.PRESENT, [], cb);
                                 });
                             }
+                        });
+                    } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
+                });
+            }
+        });
+    }
+
+    /**
+     * Get services
+     * @param {*object} obj 
+     * @param {*function} cb 
+     */
+    static getServices(obj, cb) {
+        Connection.connect((err, db, client) => {
+            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+            else {
+                var users = db.collection('users');
+                var services = db.collection('services');
+                users.find({ _id: new ObjectId(obj.id), userAccessToken: obj.accessToken }).toArray((err, data) => {
+                    if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                    if (data && data.length !== 0) {
+                        services.find({ lawyerId: obj.lawyerId }).toArray((err, data) => {
+                            if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb);
+                            if (data && data.length !== 0) CommonJs.close(client, CommonJSInstance.SUCCESS, data[0], cb);
+                            else CommonJs.close(client, CommonJSInstance.NOVALUE, [], cb);
                         });
                     } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
                 });

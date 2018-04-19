@@ -6,6 +6,7 @@ export class CommonJs {
     constructor() {
         this.NOT_VALID = 'notValid';
         this.SUCCESS = 'success';
+        this.SUCCESS_WITH_EMAIL_CHANGE = 'successWithEmailChange';
         this.ERROR = 'err';
         this.PRESENT = 'present';
         this.NOVALUE = 'noValue';
@@ -186,6 +187,17 @@ export class CommonJs {
                         code: 1,
                         data: response,
                         message: "Success",
+                        emptyKeys: null,
+                        error: false
+                    })
+                break;
+            case 'successWithEmailChange':
+                res.status(200)
+                    .json({
+                        status: 200,
+                        code: 1,
+                        data: response,
+                        message: "SuccessWithEmailChange",
                         emptyKeys: null,
                         error: false
                     })

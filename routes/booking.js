@@ -174,5 +174,14 @@ routes.post('/addServices', (req, res) => {
             Operations.addServices(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
         } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
     });
+});
+
+routes.post('/getServices', (req, res) => {
+    CommonJs.validate("getServices", req.body, (status, emptyKeys) => {
+        if (status) {
+            Operations.getServices(req.body, (status, response) => CommonJs.httpResponse(req, res, status, response));
+        } else CommonJs.httpResponse(req, res, CommonJsInstance.VALIDATE_ERROR, emptyKeys);
+    });
 })
+
 module.exports = routes;
