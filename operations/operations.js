@@ -1654,7 +1654,7 @@ export class Operations {
                                 }, (err, data) => {
                                     console.log(data);
                                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
-                                    else CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb);
+                                    else this.getUserInfo({ id: obj.id, accessToken: obj.accessToken, uid: obj.id }, cb);
                                 });
                             } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
                         });
@@ -1741,7 +1741,7 @@ export class Operations {
                                 }, (err, data) => {
                                     console.log(data);
                                     if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
-                                    else CommonJs.close(client, CommonJSInstance.SUCCESS, [], cb);
+                                    else this.getUserInfo({ id: obj.id, accessToken: obj.accessToken, uid: obj.id }, cb);
                                 });
                             } else CommonJs.close(client, CommonJSInstance.NOT_VALID, [], cb);
                         });

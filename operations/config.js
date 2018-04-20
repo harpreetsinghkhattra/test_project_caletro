@@ -38,7 +38,7 @@ module.exports = {
         markAsViewedDenyBooking: ["id", "accessToken", "bookingId", "userType"],
 
         editLawyerProfile: ["id", "accessToken", "name", "qualifications", "phone", "name", "email"],
-        editClientProfile: ["id", "accessToken", "name", "dob", "phone", "name", "email"],
+        editClientProfile: ["id", "accessToken", "name", "phone", "name", "email"],
         addServices: ["id", "accessToken", "name", "description", "price", "notes", "duration"],
         getServices: ["id", "accessToken", "lawyerId"]
     }
