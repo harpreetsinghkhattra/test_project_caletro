@@ -18,7 +18,7 @@ export class CommonJs {
         this.UNLIKE = "unlike";
         this.VOTE = "vote";
         this.UNVOTE = "unVote";
-        this.BASE_URL = "http://34.223.229.37";
+        this.BASE_URL = "http://34.223.229.37"; 
         this.EMAIL_PRESENT = "emailPresent";
         this.LOGED_IN = "logedIn";
         this.LOGED_OUT = "logedOut"
