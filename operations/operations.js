@@ -1699,7 +1699,7 @@ export class Operations {
                                                 }
                                             }, (err, data) => {
                                                 if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
-                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS_WITH_EMAIL_CHANGE, [], cb));
+                                                else SendMail.emailVerificationWhileChanginEmail(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS_WITH_EMAIL_CHANGE, [], cb));
                                             });
                                         });
                                     }
@@ -1783,7 +1783,7 @@ export class Operations {
                                                 }
                                             }, (err, data) => {
                                                 if (err) CommonJs.close(client, CommonJSInstance.ERROR, err, cb)
-                                                else SendMail.signupSuccess(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS_WITH_EMAIL_CHANGE, [], cb));
+                                                else SendMail.emailVerificationWhileChanginEmail(mailSentOpt, (status, res) => CommonJs.close(client, CommonJSInstance.SUCCESS_WITH_EMAIL_CHANGE, [], cb));
                                             });
                                         });
                                     }
