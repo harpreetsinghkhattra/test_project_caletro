@@ -9,7 +9,7 @@ export class Connection{
             {
                 if(err) cb(err, null);
                 if(client){
-                    const db = client.db('lawyerup');
+                    const db = client.db('cletro');
                     cb(null, db, client);
                 }
             }
